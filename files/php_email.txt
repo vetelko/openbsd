@@ -1,0 +1,14 @@
+Setup chrooted php mail function:
+1. create folder /var/www/etc
+$ doas mkdir /var/www/etc
+2. copy /etc/hosts into /var/www/etc
+$ doas cp /etc/hosts /var/www/etc/
+3. copy /bin/sh into /var/www/bin
+$ doas cp /bin/sh /var/www/bin/
+4. in /etc/php-7.0.ini set variable sendmail_path = "/usr/sbin/sendmail -t -i" ... it is /var/www/usr/bin/sendmail actually
+5. restart php70_fpm daemon
+$ doas rcctl restart php70_fpm
+6. test mail function in your script by example via browser :)
+7. test chrooted sendmail from command line
+$ echo "This is a test mail" | doas chroot -g www -u www /var/www /usr/sbin/sendmail -v -t -i -f admin@youdomain.com recipient@example.com 
+

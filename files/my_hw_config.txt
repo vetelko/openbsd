@@ -1,0 +1,14 @@
+My cheap OpenBSD desktop HW bought in 2015 to run Arch Linux
+for cca 250 Eur.
+
+SSD disk ADATA Premier Pro SP600 128GB
+Memory Crucial 4GB DDR3 1600MHz CL11
+Motherboard GIGABYTE H81N-D2H
+Case Cooler Master Elite 110
+Eurocase 350W PFC
+Wireless kbd + mouse Genius SlimStar 8000ME
+Procesor Intel Pentium G3258
+CONNECT IT CI-232 Mini WiFi Adapter 150Mb/s
+
+Everything except (unsupported) sound over HDMI works perfectly.
+

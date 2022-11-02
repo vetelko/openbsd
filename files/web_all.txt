@@ -1,0 +1,128 @@
+#What I want to achieve:
+# Forward all tls requests to example1.com via relayd to httpd 127.0.0.1:8082
+# Forward all tls requests to example2.com via relayd to httpd 127.0.0.1:8083
+
+
+# acme-client.conf, Lets Encrypt SAN certificate
+authority letsencrypt {
+        api url "https://acme-v01.api.letsencrypt.org/directory"
+        account key "/etc/acme/letsencrypt-privkey.pem"
+}
+
+authority letsencrypt-staging {
+        api url "https://acme-staging.api.letsencrypt.org/directory"
+        account key "/etc/acme/letsencrypt-staging-privkey.pem"
+}
+
+domain example1.com {
+        alternative names { www.example1.com, example2.com, www.example2.com }
+        domain key "/etc/ssl/private/<VPS-EXTERNAL-IP>.key"
+        domain certificate "/etc/ssl/<VPS-EXTERNAL-IP>.crt"
+        domain full chain certificate "/etc/ssl/<VPS-EXTERNAL-IP>.fullchain.pem"
+        sign with letsencrypt
+}
+
+# generate certificate
+$ doas acme-client -vAD example1.com
+
+# relayd.conf
+table <local1> { 127.0.0.1 }
+table <local2> { 127.0.0.1 }
+ext_ip = "<VPS-EXTERNAL-IP>"
+
+http protocol "https" {
+        block
+        return error
+
+        # set some HTTP headers if you wish
+
+        pass request quick header "Host" value "www.example1.com" forward to <local1>
+        pass request quick header "Host" value "www.example2.com" forward to <local2>
+
+        tls { no client-renegotiation }
+}
+
+relay "tlsforward" {
+        listen on $ext_ip port 443 tls
+        protocol https
+        forward to <local1> port 8082 check tcp
+        forward to <local2> port 8083 check tcp
+}
+
+
+
+# httpd.conf
+ext_ip = "<VPS-EXTERNAL-IP>"
+
+# example1.com ------------------------------------------------------------------
+# redirect from http to httpS
+server "example1.com" {
+        alias www.example1.com
+        listen on $ext_ip port 80
+        no log
+        location * {
+                block return 301 "https://www.example1.com$REQUEST_URI"
+        }
+}
+# redirect from non-www httpS to www httpS
+server "example1.com" {
+        listen on 127.0.0.1 port 8082
+        no log
+        location "/.well-known/acme-challenge/*" {
+                root { "/acme", strip 2 }
+        }
+        location * {
+                block return 301 "https://www.example1.com$REQUEST_URI"
+        }
+}
+# final destination is https with www
+server "www.example1.com" {
+        listen on 127.0.0.1 port 8082
+        root "/htdocs/example1.com"
+        directory {
+                index "index.php"
+        }
+        location "/.well-known/acme-challenge/*" {
+                root { "/acme", strip 2 }
+        }
+        location "*.php" {
+                fastcgi socket "/run/php-fpm.sock"
+        }
+}
+
+# example2.com ------------------------------------------------------------------
+# redirect from http to httpS
+server "example2.com" {
+        alias www.example2.com
+        listen on $ext_ip port 80
+        no log
+        location * {
+                block return 301 "https://www.example2.com$REQUEST_URI"
+        }
+}
+# redirect from non-www httpS to www httpS
+server "example2.com" {
+        listen on 127.0.0.1 port 8083
+        no log
+        location "/.well-known/acme-challenge/*" {
+                root { "/acme", strip 2 }
+        }
+        location * {
+                block return 301 "https://www.example2.com$REQUEST_URI"
+        }
+}
+# final destination is https with www
+server "www.example2.com" {
+        listen on 127.0.0.1 port 8083
+        root "/htdocs/example2.com"
+        directory {
+                index "index.php"
+        }
+        location "/.well-known/acme-challenge/*" {
+                root { "/acme", strip 2 }
+        }
+        location "*.php" {
+                fastcgi socket "/run/php-fpm.sock"
+        }
+}
+

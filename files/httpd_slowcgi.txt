@@ -1,0 +1,50 @@
+I'm using C for this example. You can use some
+scripting language. Copy scripting language
+executable eg perl into /var/www/usr/bin and copy 
+dependency libraries because of httpd jail.
+
+create test.c
+--
+#include <stdio.h>
+
+int main(int argc, char **argv) {
+  puts("Status: 200 OK\n");
+  puts("Content-Type: text/plain\n\n");
+  puts("Hello from C");
+}
+--
+
+build the executable
+$ cc -o test test.c
+
+check and copy dependencies into jail
+$ ldd ./test
+$ doas cp /usr/lib/libc.so.92.3 /var/www/usr/lib
+$ doas cp /usr/libexec/ld.so /var/www/usr/libexec
+
+create directory for test executable
+$ doas mkdir /var/www/htdocs/c
+
+copy test executable to its place
+$ doas cp test /var/www/htdocs/c/index.cgi
+
+update httpd.conf
+--
+server "default" {
+    listen on * port 80
+
+    location "*.cgi" {
+        fastcgi socket "/run/slowcgi.sock"
+    }
+}
+--
+
+start slowcgi daemon
+$ doas rcctl -f start slowcgi
+
+reload httpd
+$ doas rcctl reload httpd
+
+visit http://localhost/c/index.cgi
+:)
+

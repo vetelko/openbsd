@@ -1,0 +1,33 @@
+#	$OpenBSD: smtpd.conf,v 1.9 2016/05/03 18:43:45 jung Exp $
+
+queue   compression
+queue   encryption fcd7b24fabd824f7a25533400076f4b3
+queue   ttl 4d
+bounce  warn-interval 1h, 6h, 12h, 1d
+smtp    max-message-size 50M
+mta     max-deferred 100
+
+pki host.example.com cert "/etc/ssl/host.example.com.crt"
+pki host.example.com key "/etc/ssl/private/host.example.com.key"
+
+table aliases db:/etc/mail/aliases.db
+table vusers file:/etc/mail/vusers
+table vdomains file:/etc/mail/vdomains
+
+listen on lo0
+listen on lo0 port 10029 tag DKIM_OUT
+listen on egress tls pki host.example.com auth-optional
+listen on egress smtps pki host.example.com auth-optional
+listen on egress port submission tls-require pki host.example.com auth
+
+action "local1" mbox alias <aliases>
+action "virtual1" mbox virtual <vusers>
+action "relay1" relay
+action "add_dkim" relay host smtp://127.0.0.1:10030
+
+match for local action "local1"
+match from any for domain <vdomains> action "virtual1"
+match tag DKIM_OUT for any action "relay1"
+match from local for any action add_dkim
+match auth from any for any action add_dkim
+

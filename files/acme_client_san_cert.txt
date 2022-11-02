@@ -1,0 +1,12 @@
+# ...
+domain example1.com {
+        alternative names { www.example1.com, example2.com, www.example2.com, example3.com, www.example3.com ... }
+        domain key "/etc/ssl/private/<IP-ADDRESS>.key"
+        domain certificate "/etc/ssl/<IP-ADDRESS>.crt"
+        domain full chain certificate "/etc/ssl/<IP-ADDRESS>.fullchain.pem"
+        sign with letsencrypt
+}
+# ...
+
+# generate certs for domain and alternatives
+doas acme-client -vAD example1.com

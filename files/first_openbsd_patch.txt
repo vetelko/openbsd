@@ -1,0 +1,39 @@
+First create a directory for sources
+$ mkdir -p ~/dir && cd ~/dir
+
+Download program sources, cwm in this case.
+$ cvs -qd anoncvs@anoncvs.usa.openbsd.org:/cvs checkout -P xenocara/app/cwm/
+
+cd into cwm source directory
+$ cd xenocara/app/cwm/
+
+make changes. cwm man page in this case.
+$ vim cwm.1
+
+show differences, example output follows
+$ cvs diff
+-------------------------------------------------------------------
+cvs server: Diffing .
+Index: cwm.1
+===================================================================
+RCS file: /cvs/xenocara/app/cwm/cwm.1,v
+retrieving revision 1.62
+diff -u -p -r1.62 cwm.1
+--- cwm.1       4 Feb 2018 22:56:26 -0000       1.62
++++ cwm.1       8 May 2018 12:33:19 -0000
+@@ -19,7 +19,7 @@
+ .Os
+ .Sh NAME
+ .Nm cwm
+-.Nd a lightweight and efficient window manager for X11
++.Nd a simple, lightweight and efficient window manager for X11
+ .Sh SYNOPSIS
+ .\" For a program:  program [-abc] file ...
+ .Nm cwm
+-------------------------------------------------------------------
+
+Store diff into file if you want
+$ cvs diff > myfirstpatch.diff
+
+AFAIK diff should be send into tech@ mailing list
+inlined into your e-mail message.
