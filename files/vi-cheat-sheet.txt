@@ -1,0 +1,79 @@
+^A search forward for cursor word
+*  search forward for cursor word
+^G file status
+^] tag jump to
+^T tag jump back 
+^Z suspend editor
+^^ switch to previous file - ctrl-6
+ ! filter through command(s) to motion
+ # number increment/decrement
+ $ move to last column
+ % move to match
+ & repeat substitution
+ ' move to mark (to first non-blank)
+ ( move back sentence
+ ) move forward sentence
+ + move down by lines (to first non-blank)
+ , reverse last F, f, T or t search
+ - move up by lines (to first non-blank)
+ . repeat the last command
+ / search forward
+ ? search backward
+ 0 move to first character
+ : ex command
+ ; repeat last F, f, T or t search
+ < shift lines left to motion
+ > shift lines right to motion
+ @ execute buffer
+ A append to the end of line
+ B move back bigword
+ C change to end-of-line
+ D delete to end-of-line
+ E move to end of bigword
+ F character in line backward search
+ G move to line
+ H move to count lines from screen top
+ I insert before first nonblank
+ J join lines
+ L move to screen bottom
+ M move to screen middle
+ N reverse last search
+ O insert above line
+ P insert before cursor from buffer
+ Q switch to ex mode
+ R replace characters
+ S substitute for the line(s)
+ T before character in line backward search
+ U Restore the current line
+ W move to next bigword
+ X delete character before cursor
+ Y copy line
+ZZ save file and exit
+[[ move back section
+]] move forward section
+ ^ move to first non-blank
+ _ move to first non-blank
+ ` move to mark
+ a append after cursor
+ b move back word
+ c change to motion
+ d delete to motion
+ e move to end of word
+ f character in line forward search
+ i insert before cursor
+ m set mark
+ n repeat last search
+ o append after line
+ p insert after cursor from buffer
+ r replace character
+ s substitute character
+ t before character in line forward search
+ u undo last change
+ w move to next word
+ x delete character
+ y copy text to motion into a cut buffer
+ z reposition the screen
+ { move back paragraph
+ | move to column
+ } move forward paragraph
+ ~ reverse case
